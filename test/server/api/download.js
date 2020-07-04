@@ -7,6 +7,8 @@ const JSZip   = require('jszip');
 const path    = require('path');
 const fs      = require('fs');
 
+const superagent = require('superagent');
+
 
 function binaryParser(res, callback) {
   res.setEncoding('binary');
@@ -22,13 +24,14 @@ function binaryParser(res, callback) {
 
 describe('API.download', function () {
 
-  it('with custom icon', async function () {
-    let res = await request
-      .post('/')
+  it.only('with custom icon', async function () {
+    let res = await superagent
+      .post(TEST.N.config.bind.default.mount)
       .field('url', 'http://example.com')
       .attach('config', path.join(__dirname, 'fixtures', 'config_custom.json'))
-      .set('Accept', 'application/json')
-      .expect(200);
+      .set('Accept', 'application/json');
+
+    assert.strictEqual(res.statusCode, 200);
 
     res = await request
       .get(`/${res.text}/get`)
@@ -51,11 +54,12 @@ describe('API.download', function () {
 
 
   it('with fontelico icon', async function () {
-    let res = await request
-      .post('/')
+    let res = await superagent
+      .post(TEST.N.config.bind.default.mount)
       .attach('config', path.join(__dirname, 'fixtures', 'config_fontelico.json'))
-      .set('Accept', 'application/json')
-      .expect(200);
+      .set('Accept', 'application/json');
+
+    assert.strictEqual(res.statusCode, 200);
 
     res = await request
       .get(`/${res.text}/get`)
